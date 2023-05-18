@@ -1,0 +1,6 @@
+name: myPlug
+version: '${project.version}'
+main: com.eneskey.paper.myplug.MyPlug
+api-version: 1.19
+commands:
+  plug: {}
