@@ -1,10 +1,5 @@
-# mac files
-.DS_Store
-
-# ignore vscode stuff
-.settings
-.settings/
-.project
+# IntelliJ IDEA
+.idea/*
 
 # ignore other java files
 bin/
@@ -35,9 +30,3 @@ target/
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-# intellij
-*.iml
-*.ipr
-*.iws
-.idea/*
-out/

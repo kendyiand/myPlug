@@ -2,5 +2,3 @@ name: myPlug
 version: '1.0-SNAPSHOT'
 main: com.eneskey.paper.myplug.MyPlug
 api-version: 1.19
-commands:
-  plug: {}
