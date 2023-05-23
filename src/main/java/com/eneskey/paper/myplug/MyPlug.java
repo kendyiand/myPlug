@@ -12,12 +12,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class MyPlug extends JavaPlugin implements Listener {
     private WorldGuardPlugin worldGuardPlugin;
@@ -48,9 +55,7 @@ public final class MyPlug extends JavaPlugin implements Listener {
         Material blockType = block.getType();
         Location blockLocation = block.getLocation();
 
-        // Проверяем, находимся ли в регионе "spawn"
         if (isInSpawnRegion(blockLocation)) {
-            // Применяем логику только для региона "spawn"
 
             if (blockType == Material.COAL_ORE) {
                 event.setCancelled(true);
@@ -76,7 +81,6 @@ public final class MyPlug extends JavaPlugin implements Listener {
                 }, 100);
             }
         }
-        // Логика для других местоположений вне региона "spawn" может быть добавлена здесь
     }
     private boolean isInSpawnRegion(Location location) {
         if (worldGuardPlugin == null) {
@@ -96,14 +100,36 @@ public final class MyPlug extends JavaPlugin implements Listener {
             return false;
         }
 
-        ProtectedRegion spawnRegion = regions.getRegion("spawn");
-        if (!(spawnRegion instanceof ProtectedCuboidRegion)) {
-            return false;
+        // Загрузка списка регионов из файла в ресурсах
+        List<String> regionNames = loadRegionNames();
+
+        for (String regionName : regionNames) {
+            ProtectedRegion region = regions.getRegion(regionName);
+            if (region instanceof ProtectedCuboidRegion) {
+                ProtectedCuboidRegion cuboidRegion = (ProtectedCuboidRegion) region;
+
+                BlockVector3 blockVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
+                if (cuboidRegion.contains(blockVector)) {
+                    return true;
+                }
+            }
         }
 
-        ProtectedCuboidRegion cuboidRegion = (ProtectedCuboidRegion) spawnRegion;
+        return false;
+    }
 
-        BlockVector3 blockVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
-        return cuboidRegion.contains(blockVector);
+    private List<String> loadRegionNames() {
+        List<String> regionNames = new ArrayList<>();
+
+        try (InputStream inputStream = getClass().getResourceAsStream("/regions.yml")) {
+            if (inputStream != null) {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(inputStream));
+                regionNames = config.getStringList("regions");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return regionNames;
     }
 }
