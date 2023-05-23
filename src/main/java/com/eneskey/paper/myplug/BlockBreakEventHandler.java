@@ -1,13 +1,14 @@
 package com.eneskey.paper.myplug;
 
+import com.eneskey.paper.myplug.MyPlug;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,31 +17,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public final class MyPlug extends JavaPlugin implements Listener {
-    private WorldGuardPlugin worldGuardPlugin;
-    @Override
-    public void onEnable() {
-        if (!setupWorldGuard()) {
-            getLogger().warning("WorldGuard not found. Disabling plugin.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+public class BlockBreakEventHandler implements Listener {
+    private final MyPlug plugin;
 
-        getServer().getPluginManager().registerEvents(this, this);
+    public BlockBreakEventHandler(MyPlug plugin) {
+        this.plugin = plugin;
     }
-
-    private boolean setupWorldGuard() {
-        Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
-        if (plugin instanceof WorldGuardPlugin) {
-            worldGuardPlugin = (WorldGuardPlugin) plugin;
-            return true;
-        }
-        return false;
-    }
-
 
     @EventHandler
     public void handleBlockBreakEvent(BlockBreakEvent event) {
