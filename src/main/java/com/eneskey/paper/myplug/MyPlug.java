@@ -57,28 +57,30 @@ public final class MyPlug extends JavaPlugin implements Listener {
 
         if (isInSpawnRegion(blockLocation)) {
 
-            if (blockType == Material.COAL_ORE) {
+            if (blockType == Material.COAL_ORE || blockType == Material.COBBLESTONE) {
                 event.setCancelled(true);
-                block.setType(Material.COBBLESTONE);
-                ItemStack coal = new ItemStack(Material.COAL, 1);
-                block.getWorld().dropItemNaturally(blockLocation, coal);
 
-                Bukkit.getScheduler().runTaskLater(this, () -> {
-                    if (block.getType() == Material.COBBLESTONE) {
-                        block.setType(Material.COAL_ORE);
-                    }
-                }, 60);
-            } else if (blockType == Material.COBBLESTONE) {
-                event.setCancelled(true);
-                block.setType(Material.BEDROCK);
-                ItemStack cobblestone = new ItemStack(Material.COBBLESTONE, 1);
-                block.getWorld().dropItemNaturally(blockLocation, cobblestone);
+                if (blockType == Material.COAL_ORE) {
+                    block.setType(Material.COBBLESTONE);
+                    ItemStack coal = new ItemStack(Material.COAL, 1);
+                    block.getWorld().dropItemNaturally(blockLocation, coal);
 
-                Bukkit.getScheduler().runTaskLater(this, () -> {
-                    if (block.getType() == Material.BEDROCK) {
-                        block.setType(Material.COAL_ORE);
-                    }
-                }, 100);
+                    Bukkit.getScheduler().runTaskLater(this, () -> {
+                        if (block.getType() == Material.COBBLESTONE) {
+                            block.setType(Material.COAL_ORE);
+                        }
+                    }, 60);
+                } else {
+                    block.setType(Material.BEDROCK);
+                    ItemStack cobblestone = new ItemStack(Material.COBBLESTONE, 1);
+                    block.getWorld().dropItemNaturally(blockLocation, cobblestone);
+
+                    Bukkit.getScheduler().runTaskLater(this, () -> {
+                        if (block.getType() == Material.BEDROCK) {
+                            block.setType(Material.COAL_ORE);
+                        }
+                    }, 100);
+                }
             }
         }
     }
